@@ -1,4 +1,3 @@
-# Copie e cole este bloco EXATAMENTE como está
 spring:
   application:
     name: projeto-spring-boot-user
