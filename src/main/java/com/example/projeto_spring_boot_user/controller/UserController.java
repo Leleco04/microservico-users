@@ -1,7 +1,7 @@
 package com.example.projeto_spring_boot_user.controller;
 
 import com.example.projeto_spring_boot_user.exception.UserNotFoundException;
-import com.example.projeto_spring_boot_user.model.User;
+import com.example.projeto_spring_boot_user.domain.User;
 
 import com.example.projeto_spring_boot_user.service.UserService;
 import com.example.projeto_spring_boot_user.util.ConversorNumerico;
@@ -30,14 +30,10 @@ public class UserController {
     // Retorna o usuário de acordo com o id
     // localhost:8080/user/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable("id") String id) {
+    public ResponseEntity<User> getUser(@PathVariable("id") String id) throws UserNotFoundException {
         Long idFormatado = Long.valueOf(ConversorNumerico.formatarId(id));
-        try {
-            User user = userService.findById(idFormatado);
-            return ResponseEntity.ok(user);
-        } catch(UserNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        User user = userService.findById(idFormatado);
+        return ResponseEntity.ok(user);
     }
 
     // Cria o usuário
@@ -53,12 +49,12 @@ public class UserController {
 
     // Deleta um usuário cadastrado
     // localhost:8080/user/delete/{id} *METHOD DELETE*
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<User> deleteUser(@PathVariable("id") String id) {
         Long idFormatado = Long.valueOf(ConversorNumerico.formatarId(id));
         try {
             return ResponseEntity.ok(userService.delete(idFormatado));
-        } catch(UserNotFoundException e) {
+        } catch (UserNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }

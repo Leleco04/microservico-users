@@ -1,8 +1,9 @@
 package com.example.projeto_spring_boot_user.service;
 
 import com.example.projeto_spring_boot_user.exception.UserNotFoundException;
-import com.example.projeto_spring_boot_user.model.User;
+import com.example.projeto_spring_boot_user.domain.User;
 import com.example.projeto_spring_boot_user.repository.UserRepository;
+import com.example.projeto_spring_boot_user.util.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,19 +13,12 @@ import java.util.List;
 @Service
 public class UserService {
 
-    private int c = 0;
+    private boolean p = false;
 
     @Autowired
     private UserRepository repo;
 
     public List<User> findAll() {
-        if(c == 0) {
-            for(long i = 0; i < 10; i++) {
-                User u = new User("Nome " + i, "Sobrenome " + i, "email" + i + "@gmail.com", LocalDate.now());
-                repo.save(u);
-            }
-            c = 1;
-        }
         return repo.findAll();
     }
 
@@ -46,4 +40,4 @@ public class UserService {
         repo.delete(u);
         return u;
     }
- }
+}
