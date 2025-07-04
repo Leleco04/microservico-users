@@ -2,14 +2,12 @@ package com.example.projeto_spring_boot_user.dto;
 
 import com.example.projeto_spring_boot_user.util.UserRole;
 
-import java.time.LocalDate;
-
+// Usado para cadastrar o usuário novo
 public record RegisterDTO(
-        String nome,
-        String sobrenome,
+        String firstName,
+        String lastName,
         String email,
-        String senha,
-        LocalDate dataNascimento,
+        String password,
         UserRole role
 ) {
 }

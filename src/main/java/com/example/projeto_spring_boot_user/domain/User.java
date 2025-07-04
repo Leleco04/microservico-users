@@ -7,7 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -21,74 +20,62 @@ public class User implements UserDetails {
     private Long id;
 
     @Setter
-    private String nome;
+    private String firstName;
 
     @Setter
-    private String sobrenome;
+    private String lastName;
 
     @Setter
     @Column(unique = true)
     private String email;
 
     @Setter
-    private String senha;
+    private String password;
 
     @Setter
-    private LocalDate dataNascimento;
-
-    @Setter
-    private UserRole administrador = UserRole.USER;
+    private UserRole role = UserRole.USER;
 
     public User() {}
 
-    public User(String nome, String sobrenome, String email, String senha, LocalDate dataNascimento) {
-        this.nome = nome;
-        this.sobrenome = sobrenome;
+    public User(String firstName, String lastName, String email, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
-        this.senha = senha;
-        this.dataNascimento = dataNascimento;
+        this.password = password;
+        this.role = UserRole.USER;
     }
 
-    public User(String nome, String sobrenome, String email, String senha, LocalDate dataNascimento, UserRole administrador) {
-        this.nome = nome;
-        this.sobrenome = sobrenome;
+    public User(String firstName, String lastName, String email, String password, UserRole role) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
-        this.senha = senha;
-        this.dataNascimento = dataNascimento;
-        this.administrador = administrador;
+        this.password = password;
+        this.role = role;
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getNome() {
-        return nome;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public String getSobrenome() {
-        return sobrenome;
+    public String getLastName() {
+        return lastName;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public String getSenha() {
-        return senha;
-    }
-
-    public LocalDate getDataNascimento() {
-        return dataNascimento;
-    }
-
-    public UserRole getAdministrador() {
-        return administrador;
+    public UserRole getRole() {
+        return role;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (this.administrador == UserRole.ADMIN) {
+        if (this.role == UserRole.ADMIN) {
             // Se o usuário for admin, retorna uma lista com ROLE_ADMIN e ROLE_USER
             return List.of(
                     new SimpleGrantedAuthority("ROLE_ADMIN"),
@@ -104,17 +91,17 @@ public class User implements UserDetails {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof User user)) return false;
-        return Objects.equals(getId(), user.getId()) && Objects.equals(getNome(), user.getNome()) && Objects.equals(getSobrenome(), user.getSobrenome()) && Objects.equals(getEmail(), user.getEmail()) && Objects.equals(getDataNascimento(), user.getDataNascimento());
+        return Objects.equals(id, user.id) && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(email, user.email) && Objects.equals(getPassword(), user.getPassword()) && role == user.role;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getNome(), getSobrenome(), getEmail(), getDataNascimento());
+        return Objects.hash(id, firstName, lastName, email, getPassword(), role);
     }
 
     @Override
     public String getPassword() {
-        return this.senha;
+        return this.password;
     }
 
     @Override

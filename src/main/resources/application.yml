@@ -3,10 +3,6 @@ server:
 spring:
   application:
     name: projeto-spring-boot-user
-  security:
-    user:
-      name: x
-      password: x
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
@@ -23,3 +19,7 @@ spring:
     username: sa
     password:
     driver-class-name: org.h2.Driver
+api:
+    security:
+      token:
+        secret: ${JWT_SECRET:secret}

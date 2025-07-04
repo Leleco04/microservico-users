@@ -2,9 +2,9 @@ package com.example.projeto_spring_boot_user.repository;
 
 import com.example.projeto_spring_boot_user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.Optional;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByEmail(String email);
+    // Busca usuário por e-mail
+    UserDetails findByEmail(String email);
 }

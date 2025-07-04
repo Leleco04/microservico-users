@@ -18,26 +18,24 @@ public class UserService {
     @Autowired
     private UserRepository repo;
 
+    // Retorna todos os usuários
     public List<User> findAll() {
         return repo.findAll();
     }
 
+    // Busca um usuário pelo id e o retorna
     public User findById(Long id) throws UserNotFoundException {
         return repo.findById(id)
                 .orElseThrow(UserNotFoundException::new);
     }
 
+    // Deleta um usuário pelo id
     public void deleteById(Long id) throws UserNotFoundException {
         repo.deleteById(id);
     }
 
+    // Cria o usuário
     public User create(User user) {
         return repo.save(user);
-    }
-
-    public User delete(Long id) throws UserNotFoundException {
-        User u = findById(id);
-        repo.delete(u);
-        return u;
     }
 }

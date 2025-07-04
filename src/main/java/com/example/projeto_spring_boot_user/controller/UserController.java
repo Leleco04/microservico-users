@@ -24,6 +24,7 @@ public class UserController {
     // localhost:8080/user
     @GetMapping
     public ResponseEntity<List<User>> getUsers() {
+        // Retorna todos os usuários usando o findAll()
         return ResponseEntity.ok(userService.findAll());
     }
 
@@ -32,7 +33,11 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@PathVariable("id") String id) throws UserNotFoundException {
         Long idFormatado = Long.valueOf(ConversorNumerico.formatarId(id));
+
+        // Pega o usuário pelo id (findById)
         User user = userService.findById(idFormatado);
+
+        // Retorna o usuário após encontrar
         return ResponseEntity.ok(user);
     }
 
@@ -53,7 +58,8 @@ public class UserController {
     public ResponseEntity<User> deleteUser(@PathVariable("id") String id) {
         Long idFormatado = Long.valueOf(ConversorNumerico.formatarId(id));
         try {
-            return ResponseEntity.ok(userService.delete(idFormatado));
+            userService.deleteById(idFormatado);
+            return ResponseEntity.ok().build();
         } catch (UserNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
