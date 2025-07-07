@@ -41,17 +41,6 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    // Cria o usuário
-    // localhost:8080/user *METHOD POST*
-    @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User userCriado = userService.create(user);
-
-        URI url = URI.create("/users/" + userCriado.getId());
-
-        return ResponseEntity.created(url).body(userCriado);
-    }
-
     // Deleta um usuário cadastrado
     // localhost:8080/user/delete/{id} *METHOD DELETE*
     @DeleteMapping("/{id}")

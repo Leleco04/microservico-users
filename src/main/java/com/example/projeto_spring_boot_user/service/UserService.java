@@ -26,7 +26,7 @@ public class UserService {
     // Busca um usuário pelo id e o retorna
     public User findById(Long id) throws UserNotFoundException {
         return repo.findById(id)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new UserNotFoundException());
     }
 
     // Deleta um usuário pelo id

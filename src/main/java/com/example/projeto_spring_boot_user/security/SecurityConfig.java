@@ -33,6 +33,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                         // Limita a rota para usuários com role ADMIN
                         .requestMatchers(HttpMethod.GET, "/user").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/user/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/user/{id}").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 // Adiciona o filtro de segurança
