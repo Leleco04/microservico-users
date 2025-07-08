@@ -1,8 +1,12 @@
 server:
-  port: 8888
+  port: 8889
 spring:
   application:
     name: projeto-spring-boot-user
+  security:
+    user:
+      name: user
+      password: user
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
@@ -20,6 +24,6 @@ spring:
     password:
     driver-class-name: org.h2.Driver
 api:
-    security:
-      token:
-        secret: ${JWT_SECRET:secret}
+  security:
+    token:
+      secret: ${JWT_SECRET:secret}
