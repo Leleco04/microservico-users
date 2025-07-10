@@ -7,6 +7,8 @@ import com.example.projeto_spring_boot_user.domain.User;
 import com.example.projeto_spring_boot_user.service.UserService;
 import com.example.projeto_spring_boot_user.util.ConversorNumerico;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,9 +26,10 @@ public class UserController {
     // Retorna todos os usuários cadastrados
     // localhost:8080/user
     @GetMapping
-    public ResponseEntity<List<ResponseDTO>> getUsers() {
+    public ResponseEntity<Page<ResponseDTO>> getUsers(Pageable pageable) {
+        Page<ResponseDTO> usersPage = userService.findAll(pageable);
         // Retorna todos os usuários usando o findAll()
-        return ResponseEntity.ok(userService.findAll());
+        return ResponseEntity.ok(usersPage);
     }
 
     // Retorna o usuário de acordo com o id

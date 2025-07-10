@@ -7,6 +7,8 @@ import com.example.projeto_spring_boot_user.domain.User;
 import com.example.projeto_spring_boot_user.repository.UserRepository;
 import com.example.projeto_spring_boot_user.util.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +24,16 @@ public class UserService {
     private UserRepository repo;
 
     // Retorna todos os usuários
-    public List<ResponseDTO> findAll() {
-        List<User> users = repo.findAll();
+    public Page<ResponseDTO> findAll(Pageable pageable) {
+        Page<User> usersPage = repo.findAll(pageable);
 
-        return users.stream()
-                .map(user -> new ResponseDTO(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getRole()))
-                .toList();
+        return usersPage.map(user -> new ResponseDTO(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getRole()
+        ));
     }
 
     // Busca um usuário pelo id e o retorna
