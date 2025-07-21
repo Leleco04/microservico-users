@@ -1,130 +1,71 @@
-package com.example.projeto_spring_boot_user.domain;
+package com.example.projeto_spring_boot_user.controller.user;
 
-import com.example.projeto_spring_boot_user.util.UserRole;
-import jakarta.persistence.*;
-import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import com.example.projeto_spring_boot_user.dto.ResponseDTO;
+import com.example.projeto_spring_boot_user.exception.UserNotFoundException;
+import com.example.projeto_spring_boot_user.domain.User;
 
-import java.util.Collection;
+import com.example.projeto_spring_boot_user.service.UserService;
+import com.example.projeto_spring_boot_user.util.ConversorNumerico;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import java.util.Objects;
 
-@Entity
-@Table(name = "users")
-public class User implements UserDetails {
+@RestController
+// Define o prefixo user na url
+@RequestMapping("/user")
+@CrossOrigin(origins = "http://localhost:4200")
+public class UserController {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Autowired
+    private UserService userService;
 
-    @Setter
-    private String firstName;
-
-    @Setter
-    private String lastName;
-
-    @Setter
-    @Column(unique = true)
-    private String email;
-
-    @Setter
-    private String password;
-
-    @Setter
-    private UserRole role = UserRole.USER;
-
-    public User() {}
-
-    public User(String firstName, String lastName, String email, String password) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
+    // Retorna todos os usuários cadastrados
+    // localhost:8080/user
+    @GetMapping
+    public ResponseEntity<Page<ResponseDTO>> getUsers(Pageable pageable) {
+        Page<ResponseDTO> usersPage = userService.findAll(pageable);
+        // Retorna todos os usuários usando o findAll()
+        return ResponseEntity.ok(usersPage);
     }
 
-    public User(String firstName, String lastName, String email, String password, UserRole role) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
+    // Retorna o usuário de acordo com o id
+    // localhost:8080/user/{id}
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUser(@PathVariable("id") String id, Authentication authentication) throws UserNotFoundException {
+        String userId = authentication.getPrincipal().toString();
 
-    public Long getId() {
-        return id;
-    }
+        Long idFormatado = Long.valueOf(ConversorNumerico.formatarId(id));
 
-    public String getFirstName() {
-        return firstName;
-    }
+        boolean admin = authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
 
-    public String getLastName() {
-        return lastName;
-    }
+        if(admin || userId.equals(id)) {
+            // Pega o usuário pelo id (findById)
+            User user = userService.findById(idFormatado);
 
-    public String getEmail() {
-        return email;
-    }
-
-    public UserRole getRole() {
-        return role;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (this.role == UserRole.ADMIN) {
-            // Se o usuário for admin, retorna uma lista com ROLE_ADMIN e ROLE_USER
-            return List.of(
-                    new SimpleGrantedAuthority("ROLE_ADMIN"),
-                    new SimpleGrantedAuthority("ROLE_USER")
-            );
+            // Retorna o usuário após encontrar
+            return ResponseEntity.ok(user);
         } else {
-            // Se for um usuário comum, retorna apenas ROLE_USER
-            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User user)) return false;
-        return Objects.equals(id, user.id) && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(email, user.email) && Objects.equals(getPassword(), user.getPassword()) && role == user.role;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, firstName, lastName, email, getPassword(), role);
-    }
-
-    @Override
-    public String getPassword() {
-        return this.password;
-    }
-
-    @Override
-    public String getUsername() {
-        return this.email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
+    // Deleta um usuário cadastrado
+    // localhost:8080/user/delete/{id} *METHOD DELETE*
+    @DeleteMapping("/{id}")
+    public ResponseEntity<User> deleteUser(@PathVariable("id") String id) {
+        Long idFormatado = Long.valueOf(ConversorNumerico.formatarId(id));
+        try {
+            userService.deleteById(idFormatado);
+            return ResponseEntity.ok().build();
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
