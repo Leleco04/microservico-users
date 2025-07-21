@@ -9,7 +9,9 @@ import com.example.projeto_spring_boot_user.util.ConversorNumerico;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,14 +37,23 @@ public class UserController {
     // Retorna o usuário de acordo com o id
     // localhost:8080/user/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable("id") String id) throws UserNotFoundException {
+    public ResponseEntity<User> getUser(@PathVariable("id") String id, Authentication authentication) throws UserNotFoundException {
+        String userId = authentication.getPrincipal().toString();
+
         Long idFormatado = Long.valueOf(ConversorNumerico.formatarId(id));
 
-        // Pega o usuário pelo id (findById)
-        User user = userService.findById(idFormatado);
+        boolean admin = authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
 
-        // Retorna o usuário após encontrar
-        return ResponseEntity.ok(user);
+        if(admin || userId.equals(id)) {
+            // Pega o usuário pelo id (findById)
+            User user = userService.findById(idFormatado);
+
+            // Retorna o usuário após encontrar
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
     // Deleta um usuário cadastrado
