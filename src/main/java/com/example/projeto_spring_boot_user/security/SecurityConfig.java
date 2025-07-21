@@ -33,6 +33,7 @@ public class SecurityConfig {
                         // Libera a rota para todos
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/user/{id}").authenticated()
                         // Limita a rota para usuários com role ADMIN
                         .requestMatchers(HttpMethod.GET, "/user").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/user/{id}").hasRole("ADMIN")
