@@ -52,7 +52,7 @@ public class UserService {
 
         // Verifica se o e-mail já está cadastrado
         if (repo.findByEmail(dto.email()) != null) {
-            throw new IllegalArgumentException("E-mail já cadastrado.");
+            return null;
         }
 
         // Criptografa a senha do usuário
