@@ -47,6 +47,10 @@ public class AuthenticationController {
         // Cria o usuário de resposta
         ResponseDTO responseDTO = userService.create(dto);
 
+        if(responseDTO == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
         // Retorna o 200 OK com o usuário
         return ResponseEntity.ok().body(responseDTO);
     }
